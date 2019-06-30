@@ -16,7 +16,7 @@
 
 package com.smartbear.swagger;
 
-import com.eviware.soapui.analytics.Analytics;
+//import com.eviware.soapui.analytics.Analytics;
 import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.impl.wsdl.support.PathUtils;
 import com.eviware.soapui.plugins.ActionConfiguration;
@@ -72,7 +72,7 @@ public class AddSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
                     }
 
                     SwaggerImporter importer = SwaggerUtils.importSwaggerFromUrl(project, expUrl, dialog.getValue(Form.TYPE).equals(RESOURCE_LISTING_TYPE));
-                    Analytics.trackAction("ImportSwagger", "Importer", importer.getClass().getSimpleName());
+                    //Analytics.trackAction("ImportSwagger", "Importer", importer.getClass().getSimpleName());
                     break;
                 }
             } catch (Exception ex) {

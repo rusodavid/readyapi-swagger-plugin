@@ -125,8 +125,8 @@ public class ExportSwaggerAction extends AbstractSoapUIAction<WsdlProject> {
                 settings.setString(VERSION, dialog.getValue(Form.VERSION));
                 settings.setString(SWAGGER_VERSION, dialog.getValue(Form.SWAGGER_VERSION));
 
-                Analytics.trackAction("ExportSwagger", "Version", dialog.getValue(Form.SWAGGER_VERSION),
-                        "Format", dialog.getValue(Form.FORMAT));
+                //Analytics.trackAction("ExportSwagger", "Version", dialog.getValue(Form.SWAGGER_VERSION),
+                //        "Format", dialog.getValue(Form.FORMAT));
 
                 break;
             } catch (Exception ex) {

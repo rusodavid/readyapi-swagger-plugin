@@ -4,12 +4,12 @@ import com.eviware.soapui.impl.wsdl.WsdlProject;
 import com.eviware.soapui.model.iface.Interface;
 import com.eviware.soapui.model.project.Project;
 import com.eviware.soapui.plugins.ApiImporter;
-import com.eviware.soapui.plugins.PluginApiImporter;
+//import com.eviware.soapui.plugins.PluginApiImporter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@PluginApiImporter(label = "Swagger 1.X/2.0")
+//@PluginApiImporter(label = "Swagger 1.X/2.0")
 public class SwaggerApiImporter implements ApiImporter {
     @Override
     public List<Interface> importApis(Project project) {

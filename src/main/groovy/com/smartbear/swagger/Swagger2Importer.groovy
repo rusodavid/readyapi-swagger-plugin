@@ -17,12 +17,7 @@
 package com.smartbear.swagger
 
 import com.eviware.soapui.SoapUI
-import com.eviware.soapui.impl.rest.RestMethod
-import com.eviware.soapui.impl.rest.RestRepresentation
-import com.eviware.soapui.impl.rest.RestRequestInterface
-import com.eviware.soapui.impl.rest.RestResource
-import com.eviware.soapui.impl.rest.RestService
-import com.eviware.soapui.impl.rest.RestServiceFactory
+import com.eviware.soapui.impl.rest.*
 import com.eviware.soapui.impl.rest.support.RestParameter
 import com.eviware.soapui.impl.rest.support.RestParamsPropertyHolder.ParameterStyle
 import com.eviware.soapui.impl.wsdl.WsdlProject
@@ -99,7 +94,22 @@ class Swagger2Importer implements SwaggerImporter {
      */
 
     RestResource importPath(RestService restService, String path, Path resource) {
-        RestResource res = restService.addNewResource(path, path)
+        if (restService == null) {
+            return null
+        }
+        
+        RestResource res = null
+        List<RestResource> resources = restService.getAllResources()
+        if (resources.size() > 0) {
+            RestResource baseRes = findResourcePath(resources, path)
+            if (baseRes != null) {
+                res = baseRes.addNewChildResource(path, path)
+            } else {
+                res = restService.addNewResource(path, path)
+            }
+        } else {
+            res = restService.addNewResource(path, path)
+        }
 
         if (resource.get != null)
             addOperation(res, resource.get, RestRequestInterface.HttpMethod.GET)
@@ -241,4 +251,32 @@ class Swagger2Importer implements SwaggerImporter {
 
         return restService
     }
+
+    /**
+     * Check existing resource paths to nest them
+     * @param restService
+     * @param path
+     * @return
+     */
+    RestResource findResourcePath ( List<RestResource> resources, String path) {
+
+        logger.info("Finding resource with path [$path]")
+        RestResource res = null
+        RestResource resTemp = null
+        if (resources.size() > 0) {
+            for (RestResource r: resources) {
+                if (path.startsWith(r.path)) {
+                    logger.info("Resource with path [$r.path]")
+                    resTemp = r;
+                    res = findResourcePath(r.getChildResourceList(), path)
+                    if (res == null && resTemp != null) {
+                        res = resTemp
+                    }
+                }
+            }
+        }
+
+        return res
+    }
+
 }

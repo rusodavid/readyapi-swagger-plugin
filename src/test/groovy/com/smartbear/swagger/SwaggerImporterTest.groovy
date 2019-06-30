@@ -56,4 +56,23 @@ class SwaggerImporterTest extends GroovyTestCase {
 
         importer.importSwagger("src/test/resources/default swagger.yaml")[0]
     }
+    
+    void testCustomImportSwagger2() {
+        def project = new WsdlProject()
+        SwaggerImporter importer = new Swagger2Importer(project)
+        def url = new File("src/test/resources/swagger-login.json").toURI().toURL().toString()
+
+        def restService = importer.importSwagger(url)[0]
+        assertEquals(1, restService.endpoints.length)
+    }
+
+    void testImportLogin() {
+        def project = new WsdlProject();
+        SwaggerImporter importer = new Swagger2Importer(project)
+        def url = new File("src/test/resources/swagger-login.json").toURI().toURL().toString()
+
+        def restService = importer.importSwagger(url)[0]
+        assertEquals(1, restService.endpoints.length)
+
+    }
 }

@@ -86,7 +86,7 @@ public class CreateSwaggerProjectAction extends AbstractSoapUIAction<WorkspaceIm
                     }
 
                     SwaggerImporter importer = SwaggerUtils.importSwaggerFromUrl(project, expUrl, dialog.getValue(Form.TYPE).equals(RESOURCE_LISTING_TYPE));
-                    Analytics.trackAction("CreateSwaggerProject", "Importer", importer.getClass().getSimpleName());
+                    //Analytics.trackAction("CreateSwaggerProject", "Importer", importer.getClass().getSimpleName());
 
                     break;
                 }

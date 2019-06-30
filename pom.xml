@@ -79,7 +79,7 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-parser</artifactId>
-            <version>1.0.8-SNAPSHOT</version>
+            <version>${swagger-parser-version}</version>
         </dependency>
 
         <dependency>
@@ -148,7 +148,8 @@
     <name>SoapUI Swagger plugin</name>
 
     <properties>
-        <jackson-version>2.4.2</jackson-version>
-        <swagger-version>1.5.0</swagger-version>
+        <jackson-version>2.9.9</jackson-version>
+        <swagger-version>1.5.22</swagger-version>
+        <swagger-parser-version>1.0.45</swagger-parser-version>
     </properties>
 </project>
