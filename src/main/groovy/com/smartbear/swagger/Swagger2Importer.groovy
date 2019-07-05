@@ -103,7 +103,8 @@ class Swagger2Importer implements SwaggerImporter {
         if (resources.size() > 0) {
             RestResource baseRes = findResourcePath(resources, path)
             if (baseRes != null) {
-                res = baseRes.addNewChildResource(path, path)
+                String pathToAdd = path.replace(baseRes.path.substring(baseRes.path.lastIndexOf('/'), baseRes.path.size()),'');
+                res = baseRes.addNewChildResource(pathToAdd, pathToAdd)
             } else {
                 res = restService.addNewResource(path, path)
             }
