@@ -97,18 +97,22 @@ class Swagger2Importer implements SwaggerImporter {
         if (restService == null) {
             return null
         }
-        
+
         RestResource res = null
         List<RestResource> resources = restService.getAllResources()
+
         if (resources.size() > 0) {
             RestResource baseRes = findResourcePath(resources, path)
             if (baseRes != null) {
-                String pathToAdd = path.replace(baseRes.path.substring(baseRes.path.lastIndexOf('/'), baseRes.path.size()),'');
+                String pathToAdd = path.replace(baseRes.path.substring(baseRes.path.lastIndexOf('/'), baseRes.path.size()),'')
+                logger.info("Children added: [$pathToAdd]")
                 res = baseRes.addNewChildResource(pathToAdd, pathToAdd)
             } else {
+                logger.info("Resource added: [$path]")
                 res = restService.addNewResource(path, path)
             }
         } else {
+            logger.info("Resource added to empty resources list: [$path]")
             res = restService.addNewResource(path, path)
         }
 
@@ -130,8 +134,9 @@ class Swagger2Importer implements SwaggerImporter {
         if (resource.options != null)
             addOperation(res, resource.options, RestRequestInterface.HttpMethod.OPTIONS)
 
-        return res;
+        return res
     }
+
 
     RestMethod addOperation(RestResource resource, Operation operation, RestRequestInterface.HttpMethod httpMethod) {
 
@@ -265,14 +270,18 @@ class Swagger2Importer implements SwaggerImporter {
         RestResource res = null
         RestResource resTemp = null
         if (resources.size() > 0) {
+            printResources(resources)
             for (RestResource r: resources) {
-                if (path.startsWith(r.path)) {
-                    logger.info("Resource with path [$r.path]")
-                    resTemp = r;
+                String commonPath = checkCommonPath(path, r.path)
+                if ((commonPath != null) && (commonPath.size()>0)) {
+                    logger.info("Resource with path [$path] starts with [$r.path] with commonPath [$commonPath]")
+                    resTemp = r
                     res = findResourcePath(r.getChildResourceList(), path)
                     if (res == null && resTemp != null) {
                         res = resTemp
                     }
+                } else {
+                    logger.info("Resource with path [$path] NOT starts with [$r.path]")
                 }
             }
         }
@@ -280,4 +289,41 @@ class Swagger2Importer implements SwaggerImporter {
         return res
     }
 
+    String checkCommonPath(String newPath, String existsPath) {
+        List<String> newPaths = newPath.split('/')
+        List<String> oldPaths = newPath.split('/')
+        List<String> commonPaths = []
+
+        for (int i=0; i < newPaths.size(); i++) {
+            if (i < oldPaths.size()) {
+                if (newPaths.get(i).equals(oldPaths.get(i))) {
+                    commonPaths.add(newPaths.get(i))
+                } else {
+                    break
+                }
+            } else {
+                break
+            }
+        }
+
+        return commonPaths.join('/')
+    }
+
+    void printResources(List<RestResource> resources) {
+        logger.info("---RESOURCES----")
+        if ((resources != null) && (resources.size() > 0)) {
+            for (RestResource r : resources) {
+                logger.info(r.path)
+            }
+        }
+        logger.info("----------------")
+    }
+
+
+    class ResourceTree {
+        String fullPath
+        String path
+        RestResource resource
+        ResourceTree childs
+    }
 }
