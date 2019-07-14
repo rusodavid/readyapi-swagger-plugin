@@ -63,9 +63,14 @@ class Swagger2Importer implements SwaggerImporter {
         List<String> array = new ArrayList(swagger.paths.keySet())
         array.sort()
 
-        array = splitStrings(array)
         printList(array)
-
+        List<ResourceTree> rtList = new ArrayList<ResourceTree>()
+        ResourceTree rt = new ResourceTree()
+        //HAy que tratar una lista de ResourceTree
+        for (String path : array) {
+            rtList = listToResourceTree(rt, path, splitString(path))
+        }
+        rt.print()
         /**array.each {
             importPath(restService, it, swagger.paths.get(it))
         }
@@ -318,23 +323,60 @@ class Swagger2Importer implements SwaggerImporter {
         return commonPaths.join('/')
     }
 
-
-    List<String> splitStrings(List<String> array) {
+    List<String> splitString(String s) {
         List<String> output = new ArrayList<String>()
-        array.each {
-            it.split('/').each {output.add(it)}
-        }
+        s.split('/').each {output.add(it)}
+        output.removeAll("")
         return output
+    }
+
+    private ResourceTree listToResourceTree(ResourceTree rt, String path, List<String> splitPath) {
+        for (String s : splitPath.clone()) {
+            if (splitPath.isEmpty()) {
+                System.out.println("path empty!")
+                return rt
+            }
+            if (!rt) {
+                rt = new ResourceTree()
+            }
+            if (s.equals(rt.path)) {
+                splitPath.remove(0)
+                for (ResourceTree child : rt.childs) {
+                    child = listToResourceTree(child, path, splitPath)
+                    System.out.println("Return child: " + child.path + " with parent " + rt.path)
+                }
+            } else {
+                rt.path = splitPath.get(0)
+                System.out.println("Set path: " + rt.path)
+                splitPath.remove(0)
+                if (!splitPath.isEmpty()) {
+                    ResourceTree child = new ResourceTree()
+                    rt.childs = new ArrayList<ResourceTree>()
+                    rt.childs.add(listToResourceTree(child, path, splitPath))
+                    System.out.println("Return add child: " + child.path + " with parent " + rt.path)
+                } else {
+                    rt.fullPath = path
+                    rt.childs = new ArrayList<ResourceTree>()
+                    System.out.println("End of path: " + rt.fullPath)
+                }
+            }
+
+        }
+        return rt
     }
 
     void printList(List<String> lista) {
         logger.info("---LISTA----")
+        System.out.println("---LISTA----")
+
         if ((lista != null) && (lista.size() > 0)) {
             for (String r : lista) {
                 logger.info(r)
+                System.out.println(r)
             }
         }
         logger.info("------------")
+        System.out.println("------------")
     }
 
 
@@ -349,10 +391,27 @@ class Swagger2Importer implements SwaggerImporter {
     }
 
 
+
+
     class ResourceTree {
         String fullPath
         String path
         RestResource resource
-        ResourceTree childs
+        List<ResourceTree> childs
+
+
+        void print() {
+            System.out.println("PRINT RESOURCE TREE")
+            print("")
+            System.out.println("--- END RESOURCE TREE ---")
+        }
+
+        void print(String tab) {
+            System.out.println(tab + path)
+            for (ResourceTree child : childs) {
+                child.print(tab + "   ")
+            }
+        }
+
     }
 }
