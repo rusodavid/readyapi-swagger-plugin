@@ -75,4 +75,14 @@ class SwaggerImporterTest extends GroovyTestCase {
         assertEquals(1, restService.endpoints.length)
 
     }
+
+    void testImportCitas() {
+        def project = new WsdlProject();
+        SwaggerImporter importer = new Swagger2Importer(project)
+        def url = new File("src/test/resources/swagger-citas.json").toURI().toURL().toString()
+
+        def restService = importer.importSwagger(url)[0]
+        assertEquals(1, restService.endpoints.length)
+
+    }
 }

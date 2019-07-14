@@ -59,10 +59,17 @@ class Swagger2Importer implements SwaggerImporter {
 
         def swagger = new SwaggerParser().read(url)
         RestService restService = createRestService(swagger, url)
-        swagger.paths.each {
-            importPath(restService, it.key, it.value)
-        }
 
+        List<String> array = new ArrayList(swagger.paths.keySet())
+        array.sort()
+
+        array = splitStrings(array)
+        printList(array)
+
+        /**array.each {
+            importPath(restService, it, swagger.paths.get(it))
+        }
+**/
         result.add(restService)
         ensureEndpoint(restService, url)
 
@@ -105,7 +112,7 @@ class Swagger2Importer implements SwaggerImporter {
             RestResource baseRes = findResourcePath(resources, path)
             if (baseRes != null) {
                 String pathToAdd = path.replace(baseRes.path.substring(baseRes.path.lastIndexOf('/'), baseRes.path.size()),'')
-                logger.info("Children added: [$pathToAdd]")
+                logger.info("Children added: [$pathToAdd] to parent [$baseRes.path]")
                 res = baseRes.addNewChildResource(pathToAdd, pathToAdd)
             } else {
                 logger.info("Resource added: [$path]")
@@ -291,12 +298,14 @@ class Swagger2Importer implements SwaggerImporter {
 
     String checkCommonPath(String newPath, String existsPath) {
         List<String> newPaths = newPath.split('/')
-        List<String> oldPaths = newPath.split('/')
+        List<String> existsPaths = existsPath.split('/')
         List<String> commonPaths = []
 
         for (int i=0; i < newPaths.size(); i++) {
-            if (i < oldPaths.size()) {
-                if (newPaths.get(i).equals(oldPaths.get(i))) {
+            if (i < existsPaths.size()) {
+                boolean compare = newPaths.get(i).equals(existsPaths.get(i))
+                logger.info("[$compare]")
+                if (compare) {
                     commonPaths.add(newPaths.get(i))
                 } else {
                     break
@@ -308,6 +317,26 @@ class Swagger2Importer implements SwaggerImporter {
 
         return commonPaths.join('/')
     }
+
+
+    List<String> splitStrings(List<String> array) {
+        List<String> output = new ArrayList<String>()
+        array.each {
+            it.split('/').each {output.add(it)}
+        }
+        return output
+    }
+
+    void printList(List<String> lista) {
+        logger.info("---LISTA----")
+        if ((lista != null) && (lista.size() > 0)) {
+            for (String r : lista) {
+                logger.info(r)
+            }
+        }
+        logger.info("------------")
+    }
+
 
     void printResources(List<RestResource> resources) {
         logger.info("---RESOURCES----")
