@@ -399,6 +399,26 @@ class Swagger2Importer implements SwaggerImporter {
         RestResource resource
         List<ResourceTree> childs
 
+        int childs() {
+            if (childs == null) {
+                return 0
+            } else {
+                return childs.size()
+            }
+        }
+
+        ResourceTree flatten () {
+            if (childs() == 1) {
+              ResourceTree child = childs[0]
+              path += child.path
+              fullPath = child.fullPath
+              childs = null
+            }
+        }
+
+        boolean isLeaf() {
+            return (childs() == 0)
+        }
 
         void print() {
             System.out.println("PRINT RESOURCE TREE")
